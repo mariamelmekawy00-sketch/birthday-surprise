@@ -1,0 +1,1371 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Birthday Surprise</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Pinyon Script, Alex Brush, Great Vibes, Playfair Display, Plus Jakarta Sans, Caveat, Lora, Cairo, Amiri -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@400;600;700&family=Caveat:wght@600;700&family=Great+Vibes&family=Lora:ital,wght@0,400;0,600;1,400&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti for celebratory bursts -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'serif'],
+                        handwriting: ['"Caveat"', 'cursive'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Dynamic Theme CSS Variables */
+        :root {
+            --bg-color: #FDFBF7;
+            --bg-gradient-end: #F7EFE5;
+            --accent-color: #E87A7A;
+            --accent-dark: #D45D5D;
+            --gold-color: #D4AF37;
+            --paper-color: #FFFDF9;
+            --text-color: #2D2A2E;
+            --text-muted: #5A555C;
+            --card-surface: rgba(255, 255, 255, 0.90);
+            --font-heading: 'Playfair Display', serif;
+            --font-letter: 'Pinyon Script', 'Alex Brush', cursive;
+            --font-names: 'Pinyon Script', 'Alex Brush', cursive;
+        }
+
+        /* Custom Animations & 3D Envelope Styling */
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        /* Dynamic radial glow in background */
+        .bg-warm-glow {
+            background: radial-gradient(circle at 50% 30%, var(--bg-color) 0%, var(--bg-gradient-end) 100%);
+        }
+
+        /* Dynamic Typography Classes */
+        .theme-heading {
+            font-family: var(--font-heading);
+        }
+        .theme-letter-font {
+            font-family: var(--font-letter);
+        }
+        .theme-name-font {
+            font-family: var(--font-names);
+        }
+
+        /* Dynamic Surface & Accent Classes */
+        .theme-card {
+            background-color: var(--card-surface);
+            border-color: color-mix(in srgb, var(--gold-color) 30%, transparent);
+            color: var(--text-color);
+        }
+        .theme-text {
+            color: var(--text-color);
+        }
+        .theme-text-muted {
+            color: var(--text-muted);
+        }
+        .theme-accent-text {
+            color: var(--accent-color);
+        }
+        .theme-gold-text {
+            color: var(--gold-color);
+        }
+        .theme-accent-btn {
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-dark));
+            color: #ffffff;
+            box-shadow: 0 10px 25px -5px color-mix(in srgb, var(--accent-color) 40%, transparent);
+        }
+        .theme-accent-btn:hover {
+            filter: brightness(1.06);
+        }
+
+        /* Shake animation for wrong password */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            15%, 55% { transform: translateX(-8px); }
+            35%, 75% { transform: translateX(8px); }
+            90% { transform: translateX(-4px); }
+        }
+        .animate-shake {
+            animation: shake 0.45s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        /* Floating gentle animation for balloons & gift icon */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(2deg); }
+        }
+        .animate-float {
+            animation: floatSlow 4s ease-in-out infinite;
+        }
+
+        /* Rising background balloons */
+        @keyframes riseUp {
+            0% {
+                transform: translateY(110vh) scale(0.8) rotate(-5deg);
+                opacity: 0;
+            }
+            15% {
+                opacity: 0.65;
+            }
+            85% {
+                opacity: 0.65;
+            }
+            100% {
+                transform: translateY(-20vh) scale(1.05) rotate(8deg);
+                opacity: 0;
+            }
+        }
+        .balloon {
+            position: fixed;
+            bottom: -100px;
+            pointer-events: none;
+            z-index: 1;
+            animation: riseUp linear infinite;
+        }
+
+        /* Interactive Envelope 3D Mechanics */
+        .envelope-wrapper {
+            perspective: 1200px;
+            cursor: pointer;
+            transition: transform 0.4s ease;
+        }
+        .envelope-wrapper:hover:not(.is-open) {
+            transform: translateY(-6px) scale(1.02);
+        }
+
+        /* Recycled Gray-Brown Kraft Paper Envelope (Image 1) */
+        .envelope {
+            position: relative;
+            width: 320px;
+            height: 215px;
+            background-color: #7D7667;
+            background-image:
+                radial-gradient(rgba(38, 33, 25, 0.28) 1px, transparent 0),
+                radial-gradient(rgba(225, 218, 202, 0.22) 1px, transparent 0),
+                linear-gradient(135deg, #8B8373 0%, #726B5C 55%, #655E50 100%);
+            background-size: 16px 16px, 23px 23px, 100% 100%;
+            background-position: 0 0, 7px 9px, 0 0;
+            border-radius: 6px;
+            box-shadow: 0 24px 44px -12px rgba(32, 26, 18, 0.45), 0 10px 20px -6px rgba(0, 0, 0, 0.22), inset 0 0 24px rgba(30, 25, 18, 0.28);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @media (min-width: 640px) {
+            .envelope {
+                width: 390px;
+                height: 255px;
+            }
+        }
+
+        /* Envelope Top Flap (Recycled Kraft Paper) */
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 160px solid transparent;
+            border-right: 160px solid transparent;
+            border-top: 124px solid #867E6E;
+            transform-origin: top;
+            transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.2s 0.2s;
+            z-index: 4;
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+            filter: drop-shadow(0 6px 8px rgba(24, 20, 14, 0.32));
+        }
+
+        @media (min-width: 640px) {
+            .envelope-flap {
+                border-left-width: 195px;
+                border-right-width: 195px;
+                border-top-width: 146px;
+            }
+        }
+
+        /* Envelope Pocket (Left, Right, Bottom Kraft Paper folds) */
+        .envelope-pocket {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            border-radius: 6px;
+            z-index: 3;
+            pointer-events: none;
+        }
+        .envelope-pocket::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 160px solid #766F60;
+            border-right: 160px solid #6E6758;
+            border-bottom: 112px solid #7F7767;
+            border-top: 103px solid transparent;
+        }
+        @media (min-width: 640px) {
+            .envelope-pocket::before {
+                border-left-width: 195px;
+                border-right-width: 195px;
+                border-bottom-width: 132px;
+                border-top-width: 123px;
+            }
+        }
+
+        /* Subtle Kraft Fiber Overlay across Pocket */
+        .envelope-pocket::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                radial-gradient(rgba(30, 25, 18, 0.35) 0.9px, transparent 0),
+                radial-gradient(rgba(235, 228, 212, 0.22) 0.8px, transparent 0);
+            background-size: 14px 14px, 19px 19px;
+            background-position: 2px 3px, 9px 11px;
+            box-shadow: inset 0 0 22px rgba(25, 20, 14, 0.3);
+        }
+
+        /* Dried Baby's Breath Sprig & Torn Masking Tape ("With Love") Seal */
+        .kraft-seal-bundle {
+            position: absolute;
+            top: 52%;
+            left: 50%;
+            transform: translate(-50%, -48%);
+            width: 145px;
+            height: 110px;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.45s ease;
+            pointer-events: none;
+        }
+
+        .torn-washi-tape {
+            position: relative;
+            background: linear-gradient(135deg, #D9D2C0 0%, #C8C0AC 55%, #BDB49E 100%);
+            color: #23201C;
+            font-family: 'Caveat', cursive;
+            font-weight: 700;
+            font-size: 1.05rem;
+            letter-spacing: 0.04em;
+            padding: 3px 16px;
+            transform: rotate(-28deg) translate(8px, 12px);
+            box-shadow: 0 3px 7px rgba(20, 16, 10, 0.32), inset 0 0 6px rgba(255, 255, 255, 0.35);
+            clip-path: polygon(
+                3% 0%, 97% 2%, 100% 18%, 96% 36%, 100% 54%, 97% 74%, 100% 96%,
+                95% 100%, 4% 98%, 0% 82%, 4% 64%, 0% 44%, 3% 22%
+            );
+            white-space: nowrap;
+        }
+
+        /* Letter Card inside Envelope */
+        .letter-peek {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 88%;
+            height: 82%;
+            background: radial-gradient(circle at 50% 45%, #EFE3C6 0%, #DFCFA8 75%, #B89B6C 100%);
+            color: #2B1F14;
+            border-radius: 4px;
+            z-index: 2;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.18), inset 0 0 14px rgba(58, 36, 16, 0.45);
+            transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.25s;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        /* Open Envelope State */
+        .envelope-wrapper.is-open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+        .envelope-wrapper.is-open .kraft-seal-bundle {
+            opacity: 0;
+            transform: translate(-50%, -48%) scale(0.65);
+            pointer-events: none;
+        }
+        .envelope-wrapper.is-open .letter-peek {
+            transform: translateX(-50%) translateY(-58px);
+        }
+
+        /* Full Letter Reveal Card Transition */
+        .letter-modal-enter {
+            animation: letterPop 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        @keyframes letterPop {
+            0% {
+                opacity: 0;
+                transform: translateY(30px) scale(0.94);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Burned-Edge Vintage Crinkled Parchment Paper (Image 2) */
+        .parchment-outer-shadow {
+            filter: drop-shadow(0 22px 35px rgba(24, 16, 8, 0.36)) drop-shadow(0 6px 12px rgba(24, 16, 8, 0.22));
+        }
+
+        .paper-card {
+            position: relative;
+            background-color: #E7D8B7;
+            color: #23180E;
+            background-image:
+                /* Subtle crinkled parchment highlights & shadows */
+                linear-gradient(125deg, rgba(255,250,235,0.42) 0%, rgba(165,134,86,0.14) 24%, rgba(255,248,228,0.38) 48%, rgba(150,118,72,0.16) 72%, rgba(255,248,230,0.35) 100%),
+                linear-gradient(35deg, rgba(140,108,64,0.12) 0%, rgba(255,252,240,0.3) 35%, rgba(135,102,58,0.15) 68%, rgba(255,248,232,0.28) 100%),
+                /* Aged parchment base & burned/charred perimeter vignette */
+                radial-gradient(ellipse at 50% 50%, #EFE2C4 42%, #DFCCA5 74%, #BA9A68 89%, #6E4B26 96%, #2C1A0B 100%);
+            box-shadow:
+                inset 0 0 28px rgba(42, 23, 8, 0.78),
+                inset 0 0 65px rgba(96, 62, 26, 0.42),
+                inset 0 0 4px rgba(18, 9, 2, 0.92);
+            /* Organic irregular burned/torn paper silhouette */
+            clip-path: polygon(
+                1.2% 1.8%, 7% 0.6%, 14% 1.5%, 22% 0.4%, 31% 1.3%, 40% 0.5%, 49% 1.4%, 58% 0.4%, 67% 1.6%, 76% 0.5%, 85% 1.4%, 93% 0.6%, 98.8% 1.7%,
+                99.5% 9%, 98.5% 18%, 99.6% 27%, 98.6% 37%, 99.5% 47%, 98.4% 57%, 99.6% 67%, 98.5% 77%, 99.4% 87%, 98.6% 98.2%,
+                92% 99.4%, 83% 98.4%, 74% 99.5%, 65% 98.5%, 56% 99.4%, 47% 98.4%, 38% 99.5%, 29% 98.6%, 20% 99.4%, 11% 98.5%, 2% 99.3%,
+                0.6% 91%, 1.5% 81%, 0.5% 71%, 1.4% 61%, 0.5% 51%, 1.5% 41%, 0.4% 31%, 1.4% 21%, 0.5% 11%
+            );
+            transition: color 0.3s ease;
+        }
+
+        /* Subtle SVG paper grain noise overlay */
+        .parchment-grain {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.24;
+            mix-blend-mode: multiply;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.55'/%3E%3C/svg%3E");
+        }
+
+        /* Subtle Faded Lipstick Kiss Mark Stains (Image 2) */
+        .kiss-mark {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0.26;
+            mix-blend-mode: multiply;
+            filter: blur(0.4px);
+            z-index: 1;
+        }
+
+        /* Custom scrollbar for letter & modal */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.04);
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(180, 155, 130, 0.5);
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body class="bg-warm-glow min-h-screen flex flex-col justify-between relative">
+
+    <!-- Floating Balloons Container (Populated via JS after unlock) -->
+    <div id="balloons-container" class="fixed inset-0 pointer-events-none overflow-hidden z-0"></div>
+
+    <!-- Top Right Utility Controls (Customize Button & Lock Button) -->
+    <header class="w-full p-4 sm:p-6 flex justify-between items-center z-30 relative">
+        <div id="header-badge" class="opacity-0 transition-opacity duration-500 flex items-center gap-2 bg-white/85 backdrop-blur-sm px-3.5 py-1.5 rounded-full border border-stone-200/80 shadow-sm">
+            <span class="theme-accent-text text-sm">✨</span>
+            <span class="text-xs font-medium tracking-wide text-stone-700 uppercase">Birthday Edition</span>
+        </div>
+
+        <div class="flex items-center gap-2 ml-auto">
+            <!-- Lock Screen Again Button (visible only when unlocked) -->
+            <button id="relock-btn" onclick="lockScreen()" title="Lock Screen" class="hidden items-center gap-1.5 px-3 py-2 rounded-full bg-white/85 hover:bg-white text-stone-600 hover:text-stone-900 border border-stone-200/80 shadow-sm transition-all text-xs font-medium">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+                <span class="hidden sm:inline">Lock</span>
+            </button>
+
+            <!-- Customize / Edit Toggle Button -->
+            <button onclick="openCustomizeModal()" title="Customize Colors, Fonts, Letter & Password" class="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white/90 hover:bg-white text-stone-700 hover:text-stone-950 border border-stone-200/80 shadow-sm transition-all text-xs font-semibold group">
+                <svg class="w-4 h-4 theme-accent-text group-hover:rotate-45 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <span>Customize</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ===================================================================== -->
+    <!-- 1. PASSWORD LOCK SCREEN                                               -->
+    <!-- ===================================================================== -->
+    <main id="lock-screen" class="flex-1 flex items-center justify-center px-4 py-8 z-20 transition-all duration-700">
+        <div id="lock-card" class="w-full max-w-md theme-card backdrop-blur-md rounded-3xl p-8 sm:p-10 shadow-2xl border text-center relative overflow-hidden">
+            
+            <!-- Gift / Lock Illustration -->
+            <div class="mx-auto w-20 h-20 mb-6 rounded-2xl flex items-center justify-center shadow-inner border border-white/60 animate-float" style="background: linear-gradient(135deg, color-mix(in srgb, var(--accent-color) 25%, #fff), color-mix(in srgb, var(--gold-color) 25%, #fff));">
+                <svg class="w-10 h-10 theme-accent-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/>
+                </svg>
+            </div>
+
+            <span class="inline-block text-xs font-semibold uppercase tracking-widest theme-gold-text mb-2">Private Birthday Delivery</span>
+            <h1 class="theme-heading text-3xl sm:text-4xl font-bold theme-text mb-3 leading-tight">
+                A Special Surprise Awaits...
+            </h1>
+            <p class="theme-text-muted text-sm sm:text-base mb-7 leading-relaxed">
+                Enter the secret passcode to unlock your birthday letter and celebration.
+            </p>
+
+            <!-- Password Form -->
+            <form id="unlock-form" onsubmit="handleUnlock(event)" class="space-y-4">
+                <div class="relative">
+                    <input 
+                        type="password" 
+                        id="password-input" 
+                        placeholder="Enter passcode..." 
+                        autocomplete="off"
+                        class="w-full px-5 py-3.5 rounded-2xl bg-black/5 border border-black/10 text-center text-lg tracking-widest font-medium theme-text placeholder:opacity-50 placeholder:tracking-normal placeholder:text-sm focus:outline-none focus:ring-2 transition-all"
+                    />
+                    <button type="button" onclick="togglePasswordVisibility()" aria-label="Toggle password visibility" class="absolute right-4 top-1/2 -translate-y-1/2 theme-text-muted hover:opacity-100 opacity-70 p-1">
+                        <svg id="eye-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Friendly Error Message -->
+                <p id="error-message" class="hidden theme-accent-text text-xs sm:text-sm font-medium bg-black/5 py-2 px-3 rounded-xl">
+                    Oops! That passcode doesn't match. Give it another try! 🎈
+                </p>
+
+                <button 
+                    type="submit" 
+                    class="w-full py-3.5 px-6 rounded-2xl theme-accent-btn font-semibold text-base active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                >
+                    <span>Unlock Surprise</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/>
+                    </svg>
+                </button>
+            </form>
+
+            <!-- Subtle Demo Hint -->
+            <div class="mt-6 pt-4 border-t border-black/10">
+                <p id="password-hint-display" class="text-xs theme-text-muted">
+                    Demo Password: 1234
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- ===================================================================== -->
+    <!-- 2. BIRTHDAY CELEBRATION & INTERACTIVE LETTER REVEAL                   -->
+    <!-- ===================================================================== -->
+    <section id="celebration-screen" class="hidden flex-1 flex-col items-center justify-center px-4 py-6 sm:py-10 z-20 transition-all duration-700">
+        
+        <!-- Celebration Header -->
+        <div class="text-center max-w-xl mx-auto mb-8 sm:mb-10">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/80 border border-black/10 text-stone-800 text-xs font-semibold tracking-wider uppercase mb-3 shadow-sm">
+                <span>🎉</span>
+                <span>It's Your Special Day</span>
+                <span>🎂</span>
+            </div>
+            <h1 class="theme-heading text-4xl sm:text-5xl md:text-6xl font-bold theme-text leading-tight mb-3">
+                Happy Birthday, <span id="display-recipient" class="theme-name-font theme-accent-text font-normal text-5xl sm:text-6xl md:text-7xl">[Name]</span>!
+            </h1>
+            <p id="envelope-instruction" class="theme-text-muted text-sm sm:text-base">
+                Tap the dried-flower kraft envelope below to open your birthday letter.
+            </p>
+        </div>
+
+        <!-- Stage 2A: Interactive Kraft Paper Envelope with Dried Baby's Breath & "With Love" Tape -->
+        <div id="envelope-stage" class="flex flex-col items-center justify-center my-4">
+            <div id="envelope-wrapper" onclick="openEnvelope()" class="envelope-wrapper select-none" role="button" tabindex="0" aria-label="Open Birthday Envelope">
+                <div class="envelope">
+                    <!-- Top Flap -->
+                    <div class="envelope-flap"></div>
+                    
+                    <!-- Peeking Vintage Parchment Letter Inside -->
+                    <div class="letter-peek">
+                        <div class="w-10 h-0.5 rounded-full mb-2 bg-amber-900/30"></div>
+                        <p class="theme-name-font text-2xl sm:text-3xl text-stone-900">For <span id="peek-recipient">[Name]</span>...</p>
+                        <p class="text-[11px] opacity-70 mt-1 font-sans">Click to read full letter</p>
+                    </div>
+
+                    <!-- Front Envelope Pocket -->
+                    <div class="envelope-pocket"></div>
+
+                    <!-- Dried Baby's Breath Sprig + Torn "With Love" Strip (Image 1) -->
+                    <div class="kraft-seal-bundle">
+                        <!-- Delicate Dried White Baby's Breath SVG -->
+                        <svg class="w-28 h-24 -translate-x-2 -translate-y-2 drop-shadow-sm" viewBox="0 0 120 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Fine dried stems -->
+                            <path d="M88 94 C72 74, 58 56, 36 32" stroke="#5B5343" stroke-width="1.3" stroke-linecap="round"/>
+                            <path d="M85 92 C66 78, 48 68, 24 58" stroke="#5B5343" stroke-width="1.1" stroke-linecap="round"/>
+                            <path d="M89 93 C78 68, 72 48, 64 22" stroke="#5B5343" stroke-width="1.1" stroke-linecap="round"/>
+                            <path d="M62 60 C50 48, 45 38, 44 26" stroke="#685F4D" stroke-width="0.9" stroke-linecap="round"/>
+                            <path d="M55 72 C42 70, 32 72, 22 76" stroke="#685F4D" stroke-width="0.9" stroke-linecap="round"/>
+                            <path d="M74 56 C78 44, 84 36, 92 30" stroke="#685F4D" stroke-width="0.9" stroke-linecap="round"/>
+                            <!-- Tiny creamy-white dried baby's breath blossoms -->
+                            <g fill="#EFECE2" stroke="#B7AF9C" stroke-width="0.6">
+                                <circle cx="35" cy="31" r="3.4"/><circle cx="39" cy="28" r="2.6"/><circle cx="32" cy="35" r="2.4"/>
+                                <circle cx="64" cy="21" r="3.6"/><circle cx="68" cy="24" r="2.5"/><circle cx="60" cy="18" r="2.3"/>
+                                <circle cx="44" cy="25" r="3.1"/><circle cx="47" cy="22" r="2.2"/>
+                                <circle cx="24" cy="58" r="3.3"/><circle cx="20" cy="55" r="2.4"/><circle cx="27" cy="61" r="2.2"/>
+                                <circle cx="22" cy="76" r="2.9"/><circle cx="19" cy="79" r="2.1"/>
+                                <circle cx="92" cy="30" r="3.2"/><circle cx="95" cy="27" r="2.2"/>
+                                <circle cx="51" cy="43" r="3.0"/><circle cx="55" cy="41" r="2.1"/>
+                                <circle cx="41" cy="54" r="2.8"/><circle cx="72" cy="42" r="2.7"/>
+                            </g>
+                        </svg>
+
+                        <!-- Slanted Torn Masking Strip reading "With Love" -->
+                        <div id="envelope-tape-label" class="torn-washi-tape -ml-14">
+                            With Love
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button onclick="openEnvelope()" class="mt-8 text-xs font-semibold uppercase tracking-widest theme-accent-text hover:opacity-80 flex items-center gap-1.5 transition-opacity">
+                <span>Tap Envelope to Open</span>
+                <span>✨</span>
+            </button>
+        </div>
+
+        <!-- Stage 2B: Opened Burned-Edge Vintage Parchment Letter Card (Image 2, 3 & 4) -->
+        <div id="letter-stage" class="hidden w-full max-w-2xl mx-auto parchment-outer-shadow">
+            <div class="paper-card px-8 py-10 sm:px-14 sm:py-14 relative overflow-hidden">
+                <!-- Crinkled Paper Texture Overlay -->
+                <div class="parchment-grain"></div>
+
+                <!-- Top-Right Subtle Lipstick Kiss Mark (Image 2) -->
+                <svg class="kiss-mark top-5 right-14 sm:right-24 w-24 h-16 rotate-[-18deg]" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 40 C28 22, 46 20, 60 30 C74 20, 92 22, 106 40 C88 37, 72 36, 60 39 C48 36, 32 37, 14 40 Z" fill="#8C362B" fill-opacity="0.72"/>
+                    <path d="M18 44 C36 42, 48 44, 60 44 C72 44, 84 42, 102 44 C90 62, 74 68, 60 67 C46 68, 30 62, 18 44 Z" fill="#8C362B" fill-opacity="0.68"/>
+                    <path d="M35 28 L38 36 M48 25 L49 36 M60 30 L60 38 M72 25 L71 36 M85 28 L82 36 M34 52 L38 45 M48 58 L50 45 M60 61 L60 45 M72 58 L70 45 M86 52 L82 45" stroke="#E7D8B7" stroke-width="1.3" stroke-opacity="0.65" stroke-linecap="round"/>
+                </svg>
+
+                <!-- Bottom-Left Subtle Lipstick Kiss Mark (Image 2) -->
+                <svg class="kiss-mark bottom-16 left-6 sm:left-12 w-24 h-16 rotate-[22deg]" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 40 C28 22, 46 20, 60 30 C74 20, 92 22, 106 40 C88 37, 72 36, 60 39 C48 36, 32 37, 14 40 Z" fill="#8C362B" fill-opacity="0.68"/>
+                    <path d="M18 44 C36 42, 48 44, 60 44 C72 44, 84 42, 102 44 C90 62, 74 68, 60 67 C46 68, 30 62, 18 44 Z" fill="#8C362B" fill-opacity="0.64"/>
+                    <path d="M35 28 L38 36 M48 25 L49 36 M60 30 L60 38 M72 25 L71 36 M85 28 L82 36 M34 52 L38 45 M48 58 L50 45 M60 61 L60 45 M72 58 L70 45 M86 52 L82 45" stroke="#E7D8B7" stroke-width="1.3" stroke-opacity="0.65" stroke-linecap="round"/>
+                </svg>
+                
+                <!-- Decorative Header with Top-Right Double Heart Locket & M / M Initials (Image 4) -->
+                <div class="relative z-10 flex justify-between items-start mb-5 pb-3 border-b border-amber-950/20">
+                    <div class="pt-1">
+                        <p class="text-[11px] uppercase tracking-[0.22em] text-amber-950/70 font-sans font-semibold">Birthday Wishes</p>
+                        <h2 class="theme-name-font text-4xl sm:text-5xl font-normal mt-1 leading-none">
+                            Dear <span id="letter-recipient">[Name]</span>,
+                        </h2>
+                    </div>
+
+                    <!-- Hand-Drawn Ink Double Heart Locket with Ribbon Bow & M / M Initials (Image 4) -->
+                    <div class="shrink-0 -mt-2 -mr-2 sm:-mr-3 select-none" title="Our Initials">
+                        <svg class="w-28 h-24 sm:w-32 sm:h-28 text-stone-900" viewBox="0 0 220 175" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Left Heart Locket Outer & Inner Frame -->
+                            <path d="M96 68 C86 46, 52 44, 34 64 C16 84, 22 116, 48 136 C65 149, 82 156, 94 159" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M92 77 C83 59, 56 57, 42 73 C28 89, 33 114, 54 130 C67 140, 80 146, 89 149" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+                            <!-- Subtle inner sketch highlight on left heart -->
+                            <path d="M46 66 C36 72, 30 84, 32 97" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+
+                            <!-- Center Locket Hinge -->
+                            <rect x="94" y="75" width="7" height="17" rx="2.5" stroke="currentColor" stroke-width="2.2" fill="#E7D8B7"/>
+                            <line x1="97.5" y1="92" x2="97.5" y2="125" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <rect x="94" y="125" width="7" height="17" rx="2.5" stroke="currentColor" stroke-width="2.2" fill="#E7D8B7"/>
+
+                            <!-- Right Heart Locket Outer & Inner Frame -->
+                            <path d="M101 72 C112 52, 146 52, 164 73 C182 94, 174 126, 147 145 C130 157, 113 162, 102 164" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M105 81 C114 64, 141 64, 155 81 C169 98, 162 123, 141 138 C128 147, 115 151, 106 153" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+
+                            <!-- Eyelet Loop on Top-Right Heart -->
+                            <circle cx="158" cy="64" r="7.5" stroke="currentColor" stroke-width="2.5" fill="#E7D8B7"/>
+                            <circle cx="158" cy="64" r="2.8" fill="currentColor"/>
+
+                            <!-- Delicate Hand-Drawn Ribbon Bow tied to Eyelet -->
+                            <!-- Bow Knot -->
+                            <path d="M159 54 C162 49, 168 50, 166 56 C164 60, 158 58, 159 54 Z" stroke="currentColor" stroke-width="2.2" fill="#E7D8B7"/>
+                            <!-- Left Bow Loop -->
+                            <path d="M161 52 C148 34, 134 14, 123 18 C113 22, 124 44, 159 54" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M155 49 C144 36, 134 24, 128 25" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                            <!-- Right Bow Loop -->
+                            <path d="M166 53 C183 41, 202 36, 206 47 C210 58, 189 61, 166 56" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M170 53 C183 46, 195 44, 199 48" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                            <!-- Flowing Ribbon Tails -->
+                            <path d="M160 55 C140 46, 114 38, 96 42 C104 47, 116 47, 129 48" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M165 57 C177 78, 184 112, 204 142 C206 145, 202 146, 200 143 C183 116, 174 84, 163 59" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+
+                            <!-- Initials Inside Left & Right Hearts (Default: M & M) -->
+                            <text id="locket-initial-left" x="62" y="114" text-anchor="middle" fill="currentColor" class="theme-name-font" font-size="34">M</text>
+                            <text id="locket-initial-right" x="132" y="119" text-anchor="middle" fill="currentColor" class="theme-name-font" font-size="34">M</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Letter Body Text (Delicate Slanted Calligraphy Font - Image 3) -->
+                <div id="letter-body" dir="auto" class="relative z-10 theme-letter-font text-2xl sm:text-[1.85rem] leading-[2.35rem] sm:leading-[2.6rem] whitespace-pre-line space-y-4">
+                    <!-- Populated by JS -->
+                </div>
+
+                <!-- Sign-off -->
+                <div class="relative z-10 mt-8 pt-4 border-t border-amber-950/15 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                    <div>
+                        <p class="theme-letter-font opacity-85 text-2xl sm:text-3xl">With warmest wishes & love,</p>
+                        <p id="letter-sender" class="theme-name-font text-4xl sm:text-5xl font-normal mt-1">
+                            [Your Name]
+                        </p>
+                    </div>
+
+                    <!-- Replay Confetti & Close Envelope Actions -->
+                    <div class="flex flex-wrap items-center gap-2.5 font-sans">
+                        <button onclick="triggerConfettiBurst()" class="px-4 py-2.5 rounded-full theme-accent-btn text-xs sm:text-sm font-semibold active:scale-95 transition-all flex items-center gap-1.5">
+                            <span>🎊</span>
+                            <span>Replay Confetti</span>
+                        </button>
+                        <button onclick="closeEnvelope()" class="px-4 py-2.5 rounded-full bg-amber-950/10 hover:bg-amber-950/20 text-stone-900 text-xs sm:text-sm font-medium border border-amber-950/20 transition-all">
+                            Fold Letter
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- 3. CUSTOMIZE / EDIT MODAL (Colors, Fonts, Text & Share Link)          -->
+    <!-- ===================================================================== -->
+    <div id="customize-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-sm">
+        <div class="bg-[#FDFBF7] text-stone-800 w-full max-w-2xl rounded-3xl p-5 sm:p-7 shadow-2xl border border-stone-200 max-h-[92vh] overflow-y-auto">
+            <div class="flex justify-between items-center pb-4 border-b border-stone-200 mb-5">
+                <div>
+                    <h3 class="font-serif text-2xl font-bold text-stone-900">Customize Birthday Surprise</h3>
+                    <p class="text-xs text-stone-500 mt-0.5">Changes preview live in the background! Save or copy a shareable link when ready.</p>
+                </div>
+                <button onclick="closeCustomizeModal()" class="p-2 rounded-full hover:bg-stone-200/70 text-stone-500 hover:text-stone-900 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <form id="customize-form" onsubmit="saveCustomizations(event)" class="space-y-5">
+                
+                <!-- Section A: One-Click Theme Presets -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-2">1. Choose a Theme Preset</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-2" id="preset-buttons">
+                        <button type="button" onclick="applyPreset('roseGold')" data-preset="roseGold" class="preset-btn flex flex-col items-center p-2.5 rounded-2xl border border-stone-200 bg-white hover:border-rose-400 transition-all text-center">
+                            <span class="w-6 h-6 rounded-full mb-1.5 border border-black/10 shadow-inner" style="background: linear-gradient(135deg, #FDFBF7 50%, #E87A7A 50%);"></span>
+                            <span class="text-[11px] font-semibold text-stone-800 leading-tight">Warm Rose & Gold</span>
+                        </button>
+                        <button type="button" onclick="applyPreset('midnight')" data-preset="midnight" class="preset-btn flex flex-col items-center p-2.5 rounded-2xl border border-stone-200 bg-white hover:border-indigo-400 transition-all text-center">
+                            <span class="w-6 h-6 rounded-full mb-1.5 border border-black/10 shadow-inner" style="background: linear-gradient(135deg, #0F172A 50%, #D4AF37 50%);"></span>
+                            <span class="text-[11px] font-semibold text-stone-800 leading-tight">Midnight Starlight</span>
+                        </button>
+                        <button type="button" onclick="applyPreset('lavender')" data-preset="lavender" class="preset-btn flex flex-col items-center p-2.5 rounded-2xl border border-stone-200 bg-white hover:border-purple-400 transition-all text-center">
+                            <span class="w-6 h-6 rounded-full mb-1.5 border border-black/10 shadow-inner" style="background: linear-gradient(135deg, #F5F3FF 50%, #8B5CF6 50%);"></span>
+                            <span class="text-[11px] font-semibold text-stone-800 leading-tight">Lavender Dream</span>
+                        </button>
+                        <button type="button" onclick="applyPreset('sage')" data-preset="sage" class="preset-btn flex flex-col items-center p-2.5 rounded-2xl border border-stone-200 bg-white hover:border-emerald-500 transition-all text-center">
+                            <span class="w-6 h-6 rounded-full mb-1.5 border border-black/10 shadow-inner" style="background: linear-gradient(135deg, #EEF2EC 50%, #5F7A61 50%);"></span>
+                            <span class="text-[11px] font-semibold text-stone-800 leading-tight">Sage & Cream</span>
+                        </button>
+                        <button type="button" onclick="applyPreset('peachy')" data-preset="peachy" class="preset-btn flex flex-col items-center p-2.5 rounded-2xl border border-stone-200 bg-white hover:border-orange-400 transition-all text-center col-span-2 sm:col-span-1">
+                            <span class="w-6 h-6 rounded-full mb-1.5 border border-black/10 shadow-inner" style="background: linear-gradient(135deg, #FFF5EE 50%, #F97316 50%);"></span>
+                            <span class="text-[11px] font-semibold text-stone-800 leading-tight">Peachy Sunset</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Section B: Custom Color Pickers -->
+                <div class="bg-white p-3.5 rounded-2xl border border-stone-200/80">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-2.5">2. Fine-Tune Colors (Live Preview)</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <label class="flex items-center gap-2.5 cursor-pointer p-1.5 rounded-xl hover:bg-stone-50">
+                            <input type="color" id="edit-bg-color" oninput="handleLiveStyleChange()" class="w-8 h-8 rounded-lg cursor-pointer border-0 bg-transparent p-0">
+                            <div>
+                                <span class="block text-xs font-semibold text-stone-800">Background</span>
+                                <span id="hex-bg" class="text-[10px] text-stone-400 uppercase">#FDFBF7</span>
+                            </div>
+                        </label>
+                        <label class="flex items-center gap-2.5 cursor-pointer p-1.5 rounded-xl hover:bg-stone-50">
+                            <input type="color" id="edit-accent-color" oninput="handleLiveStyleChange()" class="w-8 h-8 rounded-lg cursor-pointer border-0 bg-transparent p-0">
+                            <div>
+                                <span class="block text-xs font-semibold text-stone-800">Accent / Envelope</span>
+                                <span id="hex-accent" class="text-[10px] text-stone-400 uppercase">#E87A7A</span>
+                            </div>
+                        </label>
+                        <label class="flex items-center gap-2.5 cursor-pointer p-1.5 rounded-xl hover:bg-stone-50">
+                            <input type="color" id="edit-paper-color" oninput="handleLiveStyleChange()" class="w-8 h-8 rounded-lg cursor-pointer border-0 bg-transparent p-0">
+                            <div>
+                                <span class="block text-xs font-semibold text-stone-800">Letter Paper</span>
+                                <span id="hex-paper" class="text-[10px] text-stone-400 uppercase">#FFFDF9</span>
+                            </div>
+                        </label>
+                        <label class="flex items-center gap-2.5 cursor-pointer p-1.5 rounded-xl hover:bg-stone-50">
+                            <input type="color" id="edit-text-color" oninput="handleLiveStyleChange()" class="w-8 h-8 rounded-lg cursor-pointer border-0 bg-transparent p-0">
+                            <div>
+                                <span class="block text-xs font-semibold text-stone-800">Letter Text</span>
+                                <span id="hex-text" class="text-[10px] text-stone-400 uppercase">#2D2A2E</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Section C: Typography / Font Style Selector -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1.5">3. Calligraphy & Letter Font Style (Names & Message)</label>
+                    <select id="edit-font-style" onchange="handleLiveStyleChange()" class="w-full px-4 py-2.5 rounded-xl bg-white border border-stone-200 text-sm font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-rose-400">
+                        <option value="calligraphy">Delicate Slanted Calligraphy (Pinyon Script - Default)</option>
+                        <option value="alexBrush">Flowing Copperplate Calligraphy (Alex Brush)</option>
+                        <option value="greatVibes">Romantic Flourish Script (Great Vibes)</option>
+                        <option value="editorial">Classic Editorial Serif (Playfair Display & Lora)</option>
+                        <option value="handwritten">Casual Handwritten Ink (Caveat)</option>
+                        <option value="arabic">Arabic & Bilingual Friendly (Cairo & Amiri)</option>
+                    </select>
+                </div>
+
+                <!-- Section D: Names, Locket Initials & Passcode -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Recipient's Name</label>
+                        <input type="text" id="edit-recipient" oninput="handleLiveTextChange()" required class="w-full px-3.5 py-2 rounded-xl bg-white border border-stone-200 text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-rose-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Your Name (Sender)</label>
+                        <input type="text" id="edit-sender" oninput="handleLiveTextChange()" required class="w-full px-3.5 py-2 rounded-xl bg-white border border-stone-200 text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-rose-400">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Left Heart Initial</label>
+                            <input type="text" id="edit-initial-left" maxlength="2" oninput="handleLiveTextChange()" placeholder="M" class="w-full px-3.5 py-2 rounded-xl bg-white border border-stone-200 text-sm text-center font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-rose-400">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Right Heart Initial</label>
+                            <input type="text" id="edit-initial-right" maxlength="2" oninput="handleLiveTextChange()" placeholder="M" class="w-full px-3.5 py-2 rounded-xl bg-white border border-stone-200 text-sm text-center font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-rose-400">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Envelope Tape Label</label>
+                        <input type="text" id="edit-tape-label" maxlength="22" oninput="handleLiveTextChange()" placeholder="With Love" class="w-full px-3.5 py-2 rounded-xl bg-white border border-stone-200 text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-rose-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Secret Passcode</label>
+                        <input type="text" id="edit-password" required class="w-full px-3.5 py-2 rounded-xl bg-white border border-stone-200 text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-rose-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Lock Screen Hint</label>
+                        <input type="text" id="edit-hint" oninput="handleLiveTextChange()" placeholder="e.g. Our special date or 1234" class="w-full px-3.5 py-2 rounded-xl bg-white border border-stone-200 text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-rose-400">
+                    </div>
+                </div>
+
+                <!-- Section E: Letter Message -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Birthday Letter Message</label>
+                    <textarea id="edit-message" dir="auto" rows="4" oninput="handleLiveTextChange()" required class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-stone-200 text-sm text-stone-800 leading-relaxed focus:outline-none focus:ring-2 focus:ring-rose-400"></textarea>
+                </div>
+
+                <!-- Toast Notification inside Modal -->
+                <div id="save-toast" class="hidden text-xs font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3.5 py-2.5 rounded-xl text-center">
+                    ✓ Saved!
+                </div>
+
+                <!-- Footer Action Buttons -->
+                <div class="flex flex-wrap items-center justify-between pt-3 border-t border-stone-200 gap-2">
+                    <button type="button" onclick="resetToDefaults()" class="text-xs font-medium text-stone-500 hover:text-rose-600 underline">
+                        Reset to Default
+                    </button>
+
+                    <div class="flex flex-wrap items-center gap-2 ml-auto">
+                        <button type="button" onclick="copyShareableLink()" class="px-3.5 py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-semibold transition-colors flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                            </svg>
+                            <span>Copy Shareable Link</span>
+                        </button>
+                        <button type="submit" class="px-5 py-2.5 rounded-xl theme-accent-btn text-xs font-semibold transition-all">
+                            Save & Apply
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Subtle Footer -->
+    <footer class="w-full py-4 text-center text-xs theme-text-muted opacity-75 z-20">
+        Made with warmth & celebration ✨
+    </footer>
+
+    <!-- ===================================================================== -->
+    <!-- JAVASCRIPT LOGIC                                                      -->
+    <!-- ===================================================================== -->
+    <script>
+        /**
+         * THEME PRESETS
+         */
+        const THEME_PRESETS = {
+            roseGold: {
+                bgColor: "#FDFBF7",
+                accentColor: "#E87A7A",
+                goldColor: "#D4AF37",
+                paperColor: "#FFFDF9",
+                textColor: "#2D2A2E"
+            },
+            midnight: {
+                bgColor: "#0F172A",
+                accentColor: "#D4AF37",
+                goldColor: "#F3E5AB",
+                paperColor: "#1E293B",
+                textColor: "#F8FAFC"
+            },
+            lavender: {
+                bgColor: "#F5F3FF",
+                accentColor: "#8B5CF6",
+                goldColor: "#C084FC",
+                paperColor: "#FFFFFF",
+                textColor: "#2E1065"
+            },
+            sage: {
+                bgColor: "#EEF2EC",
+                accentColor: "#5F7A61",
+                goldColor: "#C28E5C",
+                paperColor: "#FAF8F5",
+                textColor: "#243026"
+            },
+            peachy: {
+                bgColor: "#FFF5EE",
+                accentColor: "#F97316",
+                goldColor: "#F59E0B",
+                paperColor: "#FFFDFB",
+                textColor: "#431407"
+            }
+        };
+
+        /**
+         * FONT PAIRINGS
+         */
+        const FONT_OPTIONS = {
+            calligraphy: {
+                heading: "'Playfair Display', serif",
+                letter: "'Pinyon Script', 'Alex Brush', cursive",
+                names: "'Pinyon Script', 'Alex Brush', cursive",
+                isScript: true
+            },
+            alexBrush: {
+                heading: "'Playfair Display', serif",
+                letter: "'Alex Brush', cursive",
+                names: "'Alex Brush', cursive",
+                isScript: true
+            },
+            greatVibes: {
+                heading: "'Playfair Display', serif",
+                letter: "'Great Vibes', cursive",
+                names: "'Great Vibes', cursive",
+                isScript: true
+            },
+            editorial: {
+                heading: "'Playfair Display', serif",
+                letter: "'Lora', serif",
+                names: "'Lora', serif",
+                isScript: false
+            },
+            handwritten: {
+                heading: "'Playfair Display', serif",
+                letter: "'Caveat', cursive",
+                names: "'Caveat', cursive",
+                isScript: true
+            },
+            arabic: {
+                heading: "'Cairo', sans-serif",
+                letter: "'Amiri', serif",
+                names: "'Amiri', serif",
+                isScript: false
+            }
+        };
+
+        /**
+         * DEFAULT CONFIGURATION
+         * You can edit these values directly in the code OR use the "Customize"
+         * button in the top-right corner of the website!
+         */
+        const DEFAULT_CONFIG = {
+            password: "1234",
+            hint: "Demo Password: 1234",
+            recipient: "[Name]",
+            sender: "[Your Name]",
+            initialLeft: "M",
+            initialRight: "M",
+            tapeLabel: "With Love",
+            message: `Happy Birthday! Wishing you a year filled with joy, laughter, and unforgettable memories.\n\nToday is all about celebrating the wonderful person you are and all the light you bring into the lives of everyone around you. May this new chapter bring you endless happiness, exciting adventures, and every dream your heart is wishing for.\n\nTake a moment today to smile, celebrate yourself, and know how truly appreciated you are!`,
+            theme: "roseGold",
+            bgColor: "#FDFBF7",
+            accentColor: "#E87A7A",
+            goldColor: "#D4AF37",
+            paperColor: "#E7D8B7",
+            textColor: "#23180E",
+            fontStyle: "calligraphy"
+        };
+
+        const STORAGE_KEY = "birthday_letter_config_v3";
+        let currentConfig = { ...DEFAULT_CONFIG };
+        let balloonsCreated = false;
+
+        // Initialize app on load
+        window.addEventListener("DOMContentLoaded", () => {
+            loadConfig();
+            applyConfigToUI();
+
+            // Allow pressing Enter on envelope for keyboard accessibility
+            const envWrapper = document.getElementById("envelope-wrapper");
+            if (envWrapper) {
+                envWrapper.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        openEnvelope();
+                    }
+                });
+            }
+        });
+
+        // Helper: Determine if a hex color is dark (for adaptive card surfaces & muted text)
+        function isColorDark(hex) {
+            const clean = hex.replace("#", "");
+            const r = parseInt(clean.substring(0, 2), 16) || 0;
+            const g = parseInt(clean.substring(2, 4), 16) || 0;
+            const b = parseInt(clean.substring(4, 6), 16) || 0;
+            const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+            return luminance < 0.45;
+        }
+
+        // Helper: Darken or lighten a hex color slightly
+        function adjustHex(hex, amount) {
+            let clean = hex.replace("#", "");
+            if (clean.length === 3) clean = clean.split("").map(c => c + c).join("");
+            const num = parseInt(clean, 16);
+            let r = Math.min(255, Math.max(0, (num >> 16) + amount));
+            let g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amount));
+            let b = Math.min(255, Math.max(0, (num & 0x0000FF) + amount));
+            return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+        }
+
+        // Load configuration from URL hash first (if shared link), otherwise localStorage
+        function loadConfig() {
+            try {
+                if (window.location.hash && window.location.hash.startsWith("#gift=")) {
+                    const encoded = window.location.hash.slice(6);
+                    const jsonStr = decodeURIComponent(escape(atob(encoded)));
+                    const parsed = JSON.parse(jsonStr);
+                    currentConfig = { ...DEFAULT_CONFIG, ...parsed };
+                    return;
+                }
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    currentConfig = { ...DEFAULT_CONFIG, ...JSON.parse(saved) };
+                }
+            } catch (e) {
+                console.warn("Could not parse saved or URL config:", e);
+            }
+        }
+
+        // Apply CSS variables + text content to UI
+        function applyConfigToUI() {
+            const root = document.documentElement;
+            const darkBg = isColorDark(currentConfig.bgColor);
+            const darkText = isColorDark(currentConfig.textColor);
+
+            root.style.setProperty("--bg-color", currentConfig.bgColor);
+            root.style.setProperty("--bg-gradient-end", adjustHex(currentConfig.bgColor, darkBg ? 14 : -12));
+            root.style.setProperty("--accent-color", currentConfig.accentColor);
+            root.style.setProperty("--accent-dark", adjustHex(currentConfig.accentColor, -22));
+            root.style.setProperty("--gold-color", currentConfig.goldColor || "#D4AF37");
+            root.style.setProperty("--paper-color", currentConfig.paperColor);
+            const fonts = FONT_OPTIONS[currentConfig.fontStyle] || FONT_OPTIONS.calligraphy;
+            root.style.setProperty("--font-heading", fonts.heading);
+            root.style.setProperty("--font-letter", fonts.letter);
+            root.style.setProperty("--font-names", fonts.names || fonts.letter);
+
+            // Adjust letter body text size for delicate calligraphy vs serif fonts
+            const letterBodyEl = document.getElementById("letter-body");
+            if (fonts.isScript) {
+                letterBodyEl.classList.remove("text-base", "sm:text-lg", "leading-[2.1rem]");
+                letterBodyEl.classList.add("text-2xl", "sm:text-[1.85rem]", "leading-[2.35rem]", "sm:leading-[2.6rem]");
+            } else {
+                letterBodyEl.classList.remove("text-2xl", "sm:text-[1.85rem]", "leading-[2.35rem]", "sm:leading-[2.6rem]");
+                letterBodyEl.classList.add("text-base", "sm:text-lg", "leading-[2.1rem]");
+            }
+
+            // Update Text Content, Locket Initials & Envelope Tape
+            document.getElementById("display-recipient").textContent = currentConfig.recipient;
+            document.getElementById("peek-recipient").textContent = currentConfig.recipient;
+            document.getElementById("letter-recipient").textContent = currentConfig.recipient;
+            document.getElementById("letter-sender").textContent = currentConfig.sender;
+            document.getElementById("locket-initial-left").textContent = currentConfig.initialLeft || "M";
+            document.getElementById("locket-initial-right").textContent = currentConfig.initialRight || "M";
+            document.getElementById("envelope-tape-label").textContent = currentConfig.tapeLabel || "With Love";
+            letterBodyEl.textContent = currentConfig.message;
+
+            const hintEl = document.getElementById("password-hint-display");
+            if (currentConfig.hint && currentConfig.hint.trim() !== "") {
+                hintEl.textContent = currentConfig.hint;
+                hintEl.classList.remove("hidden");
+            } else {
+                hintEl.classList.add("hidden");
+            }
+        }
+
+        // Handle Password Unlock Attempt
+        function handleUnlock(event) {
+            event.preventDefault();
+            const input = document.getElementById("password-input");
+            const lockCard = document.getElementById("lock-card");
+            const errorMsg = document.getElementById("error-message");
+            const entered = input.value.trim();
+
+            if (entered === currentConfig.password) {
+                errorMsg.classList.add("hidden");
+                input.value = "";
+                transitionToCelebration();
+            } else {
+                errorMsg.classList.remove("hidden");
+                lockCard.classList.remove("animate-shake");
+                void lockCard.offsetWidth;
+                lockCard.classList.add("animate-shake");
+                input.focus();
+                input.select();
+            }
+        }
+
+        function togglePasswordVisibility() {
+            const input = document.getElementById("password-input");
+            input.type = input.type === "password" ? "text" : "password";
+        }
+
+        function transitionToCelebration() {
+            const lockScreen = document.getElementById("lock-screen");
+            const celebScreen = document.getElementById("celebration-screen");
+            const headerBadge = document.getElementById("header-badge");
+            const relockBtn = document.getElementById("relock-btn");
+
+            lockScreen.classList.add("opacity-0", "scale-95", "pointer-events-none");
+            
+            setTimeout(() => {
+                lockScreen.classList.add("hidden");
+                celebScreen.classList.remove("hidden");
+                celebScreen.classList.add("flex");
+                
+                headerBadge.classList.remove("opacity-0");
+                relockBtn.classList.remove("hidden");
+                relockBtn.classList.add("flex");
+
+                triggerConfettiBurst();
+                spawnBalloons();
+            }, 350);
+        }
+
+        function lockScreen() {
+            const lockScreen = document.getElementById("lock-screen");
+            const celebScreen = document.getElementById("celebration-screen");
+            const headerBadge = document.getElementById("header-badge");
+            const relockBtn = document.getElementById("relock-btn");
+
+            closeEnvelope(true);
+            celebScreen.classList.add("hidden");
+            celebScreen.classList.remove("flex");
+            headerBadge.classList.add("opacity-0");
+            relockBtn.classList.add("hidden");
+            relockBtn.classList.remove("flex");
+
+            lockScreen.classList.remove("hidden", "opacity-0", "scale-95", "pointer-events-none");
+        }
+
+        function openEnvelope() {
+            const wrapper = document.getElementById("envelope-wrapper");
+            if (wrapper.classList.contains("is-open")) return;
+
+            wrapper.classList.add("is-open");
+            
+            confetti({
+                particleCount: 45,
+                spread: 60,
+                origin: { y: 0.6 },
+                colors: [currentConfig.accentColor, currentConfig.goldColor, '#FADADD', '#F3E5AB']
+            });
+
+            setTimeout(() => {
+                const envelopeStage = document.getElementById("envelope-stage");
+                const letterStage = document.getElementById("letter-stage");
+                const instruction = document.getElementById("envelope-instruction");
+
+                envelopeStage.classList.add("hidden");
+                instruction.classList.add("hidden");
+                letterStage.classList.remove("hidden");
+                letterStage.classList.add("letter-modal-enter");
+            }, 850);
+        }
+
+        function closeEnvelope(instant = false) {
+            const wrapper = document.getElementById("envelope-wrapper");
+            const envelopeStage = document.getElementById("envelope-stage");
+            const letterStage = document.getElementById("letter-stage");
+            const instruction = document.getElementById("envelope-instruction");
+
+            letterStage.classList.add("hidden");
+            letterStage.classList.remove("letter-modal-enter");
+            envelopeStage.classList.remove("hidden");
+            instruction.classList.remove("hidden");
+
+            if (instant) {
+                wrapper.classList.remove("is-open");
+            } else {
+                setTimeout(() => {
+                    wrapper.classList.remove("is-open");
+                }, 100);
+            }
+        }
+
+        function triggerConfettiBurst() {
+            const colors = [currentConfig.accentColor, currentConfig.goldColor, '#FADADD', '#F59E0B', '#A78BFA'];
+            
+            confetti({
+                particleCount: 80,
+                spread: 75,
+                origin: { y: 0.65 },
+                colors: colors
+            });
+
+            setTimeout(() => {
+                confetti({
+                    particleCount: 50,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0, y: 0.65 },
+                    colors: colors
+                });
+                confetti({
+                    particleCount: 50,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1, y: 0.65 },
+                    colors: colors
+                });
+            }, 220);
+        }
+
+        function spawnBalloons() {
+            if (balloonsCreated) return;
+            balloonsCreated = true;
+
+            const container = document.getElementById("balloons-container");
+            const balloonColors = [currentConfig.accentColor, currentConfig.goldColor, '#FADADD', '#FDE68A', '#DDD6FE'];
+            const count = 10;
+
+            for (let i = 0; i < count; i++) {
+                const balloon = document.createElement("div");
+                balloon.className = "balloon";
+                const color = balloonColors[i % balloonColors.length];
+                const leftPos = Math.floor(Math.random() * 92) + 2;
+                const duration = Math.floor(Math.random() * 10) + 14;
+                const delay = Math.floor(Math.random() * 12);
+                const size = Math.floor(Math.random() * 18) + 34;
+
+                balloon.style.left = `${leftPos}%`;
+                balloon.style.animationDuration = `${duration}s`;
+                balloon.style.animationDelay = `${delay}s`;
+
+                balloon.innerHTML = `
+                    <svg width="${size}" height="${size * 1.35}" viewBox="0 0 50 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M25 52C25 52 22 58 26 62C30 66 24 68 24 68" stroke="#D4AF37" stroke-opacity="0.45" stroke-width="1.2" stroke-linecap="round"/>
+                        <ellipse cx="25" cy="24" rx="20" ry="24" fill="${color}" fill-opacity="0.65"/>
+                        <ellipse cx="18" cy="16" rx="4" ry="7" transform="rotate(-20 18 16)" fill="white" fill-opacity="0.45"/>
+                        <path d="M22 48L28 48L25 52L22 48Z" fill="${color}" fill-opacity="0.65"/>
+                    </svg>
+                `;
+                container.appendChild(balloon);
+            }
+        }
+
+        // =====================================================================
+        // CUSTOMIZE MODAL & LIVE PREVIEW FUNCTIONS
+        // =====================================================================
+        function syncInputsWithConfig() {
+            document.getElementById("edit-bg-color").value = currentConfig.bgColor;
+            document.getElementById("edit-accent-color").value = currentConfig.accentColor;
+            document.getElementById("edit-paper-color").value = currentConfig.paperColor;
+            document.getElementById("edit-font-style").value = currentConfig.fontStyle || "calligraphy";
+            document.getElementById("edit-recipient").value = currentConfig.recipient;
+            document.getElementById("edit-sender").value = currentConfig.sender;
+            document.getElementById("edit-initial-left").value = currentConfig.initialLeft || "M";
+            document.getElementById("edit-initial-right").value = currentConfig.initialRight || "M";
+            document.getElementById("edit-tape-label").value = currentConfig.tapeLabel || "With Love";
+            document.getElementById("edit-password").value = currentConfig.password;
+            document.getElementById("edit-hint").value = currentConfig.hint;
+            document.getElementById("edit-message").value = currentConfig.message;
+
+            // Highlight active preset button
+            document.querySelectorAll(".preset-btn").forEach(btn => {
+                if (btn.dataset.preset === currentConfig.theme) {
+                    btn.classList.add("ring-2", "ring-rose-400", "bg-rose-50/40");
+                } else {
+                    btn.classList.remove("ring-2", "ring-rose-400", "bg-rose-50/40");
+                }
+            });
+        }
+
+        function updateHexLabels() {
+            document.getElementById("hex-bg").textContent = currentConfig.bgColor;
+            document.getElementById("hex-accent").textContent = currentConfig.accentColor;
+            document.getElementById("hex-paper").textContent = currentConfig.paperColor;
+            document.getElementById("hex-text").textContent = currentConfig.textColor;
+        }
+
+        function openCustomizeModal() {
+            syncInputsWithConfig();
+            document.getElementById("save-toast").classList.add("hidden");
+            document.getElementById("customize-modal").classList.remove("hidden");
+        }
+
+        function closeCustomizeModal() {
+            document.getElementById("customize-modal").classList.add("hidden");
+        }
+
+        function applyPreset(presetKey) {
+            const preset = THEME_PRESETS[presetKey];
+            if (!preset) return;
+
+            currentConfig.theme = presetKey;
+            currentConfig.bgColor = preset.bgColor;
+            currentConfig.accentColor = preset.accentColor;
+            currentConfig.goldColor = preset.goldColor;
+            currentConfig.paperColor = preset.paperColor;
+            currentConfig.textColor = preset.textColor;
+
+            syncInputsWithConfig();
+            applyConfigToUI();
+        }
+
+        function handleLiveStyleChange() {
+            currentConfig.theme = "custom";
+            currentConfig.bgColor = document.getElementById("edit-bg-color").value;
+            currentConfig.accentColor = document.getElementById("edit-accent-color").value;
+            currentConfig.paperColor = document.getElementById("edit-paper-color").value;
+            currentConfig.textColor = document.getElementById("edit-text-color").value;
+            currentConfig.fontStyle = document.getElementById("edit-font-style").value;
+
+            updateHexLabels();
+            document.querySelectorAll(".preset-btn").forEach(btn => {
+                btn.classList.remove("ring-2", "ring-rose-400", "bg-rose-50/40");
+            });
+            applyConfigToUI();
+        }
+
+        function handleLiveTextChange() {
+            currentConfig.recipient = document.getElementById("edit-recipient").value || "[Name]";
+            currentConfig.sender = document.getElementById("edit-sender").value || "[Your Name]";
+            currentConfig.initialLeft = document.getElementById("edit-initial-left").value || "M";
+            currentConfig.initialRight = document.getElementById("edit-initial-right").value || "M";
+            currentConfig.tapeLabel = document.getElementById("edit-tape-label").value || "With Love";
+            currentConfig.hint = document.getElementById("edit-hint").value;
+            currentConfig.message = document.getElementById("edit-message").value;
+            applyConfigToUI();
+        }
+
+        function saveCustomizations(event) {
+            event.preventDefault();
+            currentConfig.password = document.getElementById("edit-password").value.trim() || "1234";
+            handleLiveTextChange();
+            handleLiveStyleChange();
+
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(currentConfig));
+            } catch (e) {
+                console.warn("Could not save to localStorage:", e);
+            }
+
+            showModalToast("✓ Saved & applied! Ready to preview or share.");
+            setTimeout(() => {
+                closeCustomizeModal();
+            }, 900);
+        }
+
+        function copyShareableLink() {
+            currentConfig.password = document.getElementById("edit-password").value.trim() || "1234";
+            handleLiveTextChange();
+
+            try {
+                const jsonStr = JSON.stringify(currentConfig);
+                const encoded = btoa(unescape(encodeURIComponent(jsonStr)));
+                const baseUrl = window.location.href.split("#")[0];
+                const shareUrl = `${baseUrl}#gift=${encoded}`;
+
+                // Use temporary textarea + execCommand for reliable iframe/clipboard copying
+                const tempInput = document.createElement("textarea");
+                tempInput.value = shareUrl;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand("copy");
+                document.body.removeChild(tempInput);
+
+                showModalToast("🔗 Shareable link copied! Anyone who opens it will see your exact theme & letter.");
+            } catch (e) {
+                showModalToast("⚠️ Could not generate link automatically. Try saving first.");
+            }
+        }
+
+        function showModalToast(text) {
+            const toast = document.getElementById("save-toast");
+            toast.textContent = text;
+            toast.classList.remove("hidden");
+        }
+
+        function resetToDefaults() {
+            currentConfig = { ...DEFAULT_CONFIG };
+            try {
+                localStorage.removeItem(STORAGE_KEY);
+                if (window.location.hash.startsWith("#gift=")) {
+                    history.replaceState(null, "", window.location.pathname + window.location.search);
+                }
+            } catch (e) {}
+
+            syncInputsWithConfig();
+            applyConfigToUI();
+            showModalToast("↺ Reset to default theme & message.");
+        }
+    </script>
+</body>
+</html>
